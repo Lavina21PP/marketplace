@@ -2,13 +2,13 @@
 
 @font-face {
   font-family: "NotoSansLaos"; /* ชื่อฟอนต์ที่เราจะเรียกใช้ */
-  src: url("@/font/NotoSansLao-VariableFont_wdth,wght.ttf") format("truetype"); /* ไฟล์ฟอนต์และฟอร์แมต */
+  src: url("../font/NotoSansLao-VariableFont_wdth,wght.ttf") format("truetype"); /* ไฟล์ฟอนต์และฟอร์แมต */
   font-weight: normal; /* น้ำหนักปกติ */
   font-style: normal; /* สไตล์ปกติ (ไม่เอียง) */
 }
 @font-face {
   font-family: "Roboto"; /* ชื่อฟอนต์ที่เราจะเรียกใช้ */
-  src: url("@/font/Roboto-VariableFont_wdth,wght.ttf") format("truetype"); /* ไฟล์ฟอนต์และฟอร์แมต */
+  src: url("../font/Roboto-VariableFont_wdth,wght.ttf") format("truetype"); /* ไฟล์ฟอนต์และฟอร์แมต */
   font-weight: normal; /* น้ำหนักปกติ */
   font-style: normal; /* สไตล์ปกติ (ไม่เอียง) */
 }

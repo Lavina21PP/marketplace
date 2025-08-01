@@ -3,38 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model book {
-  b_id        Int           @id @default(autoincrement())
-  b_name      String?       @db.VarChar(50)
-  b_type      String?       @db.VarChar(50)
-  b_quantity  String?       @db.VarChar(50)
-  b_fine      String?       @db.VarChar(50)
-  person_book person_book[]
-}
-
-model person {
-  p_id        Int           @id @default(autoincrement())
-  p_lname     String?       @db.VarChar(50)
-  p_village   String?       @db.VarChar(50)
-  p_district  String?       @db.VarChar(50)
-  p_province  String?       @db.VarChar(50)
-  p_fname     String        @db.VarChar(50)
-  person_book person_book[]
-}
-
-model person_book {
-  pb_id         Int     @id @default(autoincrement())
-  book_id       Int?
-  person_id     Int?
-  pb_datestart  String? @db.VarChar(50)
-  pb_datereture String? @db.VarChar(50)
-  person        person? @relation(fields: [person_id], references: [p_id], onDelete: Cascade, map: "person_book_ibfk_1")
-  book          book?   @relation(fields: [book_id], references: [b_id], onDelete: Cascade, map: "person_book_ibfk_2")
-
-  @@index([book_id], map: "book_id")
-  @@index([person_id], map: "person_id")
+model Users1 {
+  u_id    Int    @id @default(autoincrement())
+  u_name  String
+  u_email String @unique
 }

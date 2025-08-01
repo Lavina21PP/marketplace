@@ -7,8 +7,8 @@ import { prisma } from "./index";
 //   });
 // }
 
-export async function getIncomeHistory() {
-  return await prisma.book.findMany({
-    orderBy: { b_id: "desc" },
+export async function getusers1() {
+  return await prisma.users1.findMany({
+    orderBy: { u_id: "desc" },
   });
 }
