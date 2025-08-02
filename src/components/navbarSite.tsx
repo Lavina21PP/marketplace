@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Home, User, Mail, Settings, UserCircle, Heart, ShoppingCart } from 'lucide-react';
+import { Menu, X, Home, User, Mail, Settings, UserCircle, Heart, ShoppingCart, Bell } from 'lucide-react';
 
 const NavbarSite = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,10 +38,9 @@ const NavbarSite = () => {
 
   const navItems = [
     { id: 'home', name: "หน้าแรก", href: "/", icon: Home },
-    { id: 'about', name: "เกี่ยวกับ", href: "/about", icon: User },
-    { id: 'contactUs', name: "ติดต่อ", href: "/contact-us", icon: Mail },
-    { id: 'cart', name: "ตะกร้า", href: "/cart", icon: ShoppingCart },
     { id: 'favorites', name: "ชื่นชอบ", href: "/favorites", icon: Heart },
+    { id: 'notification', name: "แจ้งเตือน", href: "/notification", icon: Bell },
+    { id: 'cart', name: "ตะกร้า", href: "/cart", icon: ShoppingCart },
     { id: 'settings', name: "ตั้งค่า", href: "/settings", icon: Settings },
   ];
 

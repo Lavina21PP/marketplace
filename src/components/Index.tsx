@@ -1,19 +1,21 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 // ใช้ Lucide icons สำหรับดีไซน์ที่ดูสะอาดตา
 // คุณสามารถติดตั้งได้ด้วยคำสั่ง `npm install lucide-react`
-import { Search, ShoppingCart, User, Heart, ChevronRight } from 'lucide-react';
+import { Search, ShoppingCart, User, Heart, ChevronRight } from "lucide-react";
+import ProductCard, { Product } from "./ProductBlock";
 
-// กำหนดประเภทข้อมูลสำหรับสินค้า
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  imageUrl: string;
-  category: string;
-}
+
+
+const formatLikes = (likes: number) => {
+  if (likes >= 1000000)
+    return `${(likes / 1000000).toFixed(1).replace(/\.0$/, "")}M`;
+  if (likes >= 1000) return `${(likes / 1000).toFixed(1).replace(/\.0$/, "")}k`;
+  return likes.toString();
+};
 
 // กำหนดประเภทข้อมูลสำหรับร้านค้า
 interface Store {
@@ -32,43 +34,71 @@ const fetchProducts = (): Promise<Product[]> => {
           id: 1,
           name: "กล้องถ่ายภาพดิจิทัล",
           price: 15990,
-          imageUrl: "https://media.istockphoto.com/id/1494935138/photo/organic-cosmetics-with-ingredients.jpg?s=612x612&w=0&k=20&c=CU-pj99HM11FO2IDnQfBW_7lw7_0D-n_gBQaLmgc00Y=",
-          category: "เครื่องสำอาง"
+          imageUrl:
+            "https://media.istockphoto.com/id/1494935138/photo/organic-cosmetics-with-ingredients.jpg?s=612x612&w=0&k=20&c=CU-pj99HM11FO2IDnQfBW_7lw7_0D-n_gBQaLmgc00Y=",
+          category: "เครื่องสำอาง",
+          likes: 135125562,
+          isLiked: false,
         },
         {
           id: 2,
           name: "หูฟังไร้สาย",
           price: 2490,
-          imageUrl: "https://img.freepik.com/free-photo/natural-cosmetics-desk_23-2148574904.jpg",
-          category: "ผลิตภัณฑ์ดูแลผิว"
+          imageUrl:
+            "https://img.freepik.com/free-photo/natural-cosmetics-desk_23-2148574904.jpg",
+          category: "ผลิตภัณฑ์ดูแลผิว",
+          likes: 135125562,
+          isLiked: false,
         },
         {
           id: 3,
           name: "กระเป๋าสะพายหนัง",
           price: 3500,
-          imageUrl: "https://t4.ftcdn.net/jpg/02/99/06/03/360_F_299060393_2kkwSCSx36oUXfrdEDrYkP2PlDAteMHW.jpg",
-          category: "แฟชั่น"
+          imageUrl:
+            "https://t4.ftcdn.net/jpg/02/99/06/03/360_F_299060393_2kkwSCSx36oUXfrdEDrYkP2PlDAteMHW.jpg",
+          category: "แฟชั่น",
+          likes: 135125562,
+          isLiked: false,
         },
         {
           id: 4,
           name: "เสื้อยืดคอตตอน",
           price: 590,
-          imageUrl: "https://t3.ftcdn.net/jpg/02/72/37/20/360_F_272372012_2aOGqAOdrJaFmaqlkGCHSvlcL2wrLUDD.jpg",
-          category: "เสื้อผ้า"
+          imageUrl:
+            "https://t3.ftcdn.net/jpg/02/72/37/20/360_F_272372012_2aOGqAOdrJaFmaqlkGCHSvlcL2wrLUDD.jpg",
+          category: "เสื้อผ้า",
+          likes: 135125562,
+          isLiked: false,
         },
         {
           id: 5,
           name: "นาฬิกาข้อมืออัจฉริยะ",
           price: 8990,
-          imageUrl: "https://media.istockphoto.com/id/172372025/photo/spa-cosmetics-series.jpg?s=612x612&w=0&k=20&c=6XAzl77SWlU-jDaCXeQFnvRI_f-UDRXisLsoXF-rzLg=",
-          category: "น้ำหอม"
+          imageUrl:
+            "https://media.istockphoto.com/id/172372025/photo/spa-cosmetics-series.jpg?s=612x612&w=0&k=20&c=6XAzl77SWlU-jDaCXeQFnvRI_f-UDRXisLsoXF-rzLg=",
+          category: "น้ำหอม",
+          likes: 135125562,
+          isLiked: false,
         },
         {
           id: 6,
           name: "หนังสือ 'สร้างสรรค์โค้ด'",
           price: 450,
-          imageUrl: "https://static.vecteezy.com/system/resources/thumbnails/040/247/630/small/ai-generated-spa-essentials-with-flowers-on-neutral-backdrop-photo.jpg",
-          category: "ของใช้ส่วนตัว"
+          imageUrl:
+            "https://static.vecteezy.com/system/resources/thumbnails/040/247/630/small/ai-generated-spa-essentials-with-flowers-on-neutral-backdrop-photo.jpg",
+          category: "ของใช้ส่วนตัว",
+          likes: 135125562,
+          isLiked: false,
+        },
+        {
+          id: 7,
+          name: "หูฟังไร้สาย",
+          price: 2490,
+          imageUrl:
+            "https://img.freepik.com/free-photo/natural-cosmetics-desk_23-2148574904.jpg",
+          category: "ผลิตภัณฑ์ดูแลผิว",
+          likes: 135125562,
+          isLiked: false,
         },
       ]);
     }, 1000);
@@ -84,51 +114,30 @@ const fetchStores = (): Promise<Store[]> => {
           id: 1,
           name: "Beauty Hub",
           logoUrl: "https://placehold.co/100x100/F0F9FF/0C4A6E?text=BH",
-          description: "สินค้าความงามและสกินแคร์จากแบรนด์ชั้นนำทั่วโลก"
+          description: "สินค้าความงามและสกินแคร์จากแบรนด์ชั้นนำทั่วโลก",
         },
         {
           id: 2,
           name: "Trendy Fashion",
           logoUrl: "https://placehold.co/100x100/F0FDF4/14532D?text=TF",
-          description: "อัปเดตเทรนด์แฟชั่นล่าสุดสำหรับทุกสไตล์"
+          description: "อัปเดตเทรนด์แฟชั่นล่าสุดสำหรับทุกสไตล์",
         },
         {
           id: 3,
           name: "Tech Gadgets",
           logoUrl: "https://placehold.co/100x100/FEF2F2/991B1B?text=TG",
-          description: "อุปกรณ์อิเล็กทรอนิกส์และแกดเจ็ตล้ำสมัย"
+          description: "อุปกรณ์อิเล็กทรอนิกส์และแกดเจ็ตล้ำสมัย",
         },
         {
           id: 4,
           name: "Books & Beyond",
           logoUrl: "https://placehold.co/100x100/FFF7ED/7C2D12?text=BB",
-          description: "แหล่งรวมหนังสือคุณภาพดีจากสำนักพิมพ์ต่างๆ"
+          description: "แหล่งรวมหนังสือคุณภาพดีจากสำนักพิมพ์ต่างๆ",
         },
       ]);
     }, 1200);
   });
 };
-
-// คอมโพเนนต์การ์ดสินค้าที่นำกลับมาใช้ใหม่ได้
-const ProductCard: React.FC<{ product: Product }> = ({ product }) => (
-  <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden">
-    <img
-      src={product.imageUrl}
-      alt={product.name}
-      className="w-full h-48 object-cover rounded-t-xl"
-    />
-    <div className="p-4">
-      <h3 className="text-lg font-semibold text-gray-800 line-clamp-1">{product.name}</h3>
-      <p className="mt-1 text-sm text-gray-500">{product.category}</p>
-      <div className="mt-2 flex items-center justify-between">
-        <span className="text-xl font-bold text-indigo-600">฿{product.price.toLocaleString()}</span>
-        <button className="bg-indigo-500 text-white p-2 rounded-full hover:bg-indigo-600 transition-colors duration-200">
-          <ShoppingCart size={18} />
-        </button>
-      </div>
-    </div>
-  </div>
-);
 
 // คอมโพเนนต์การ์ดร้านค้าที่นำกลับมาใช้ใหม่ได้ (ปรับปรุงใหม่)
 const StoreCard: React.FC<{ store: Store }> = ({ store }) => (
@@ -138,8 +147,12 @@ const StoreCard: React.FC<{ store: Store }> = ({ store }) => (
       alt={`${store.name} logo`}
       className="w-24 h-24 rounded-full object-cover mb-4 ring-2 ring-indigo-300 p-1"
     />
-    <h3 className="text-xl font-bold text-gray-800 line-clamp-1">{store.name}</h3>
-    <p className="mt-2 text-sm text-gray-500 line-clamp-2">{store.description}</p>
+    <h3 className="text-xl font-bold text-gray-800 line-clamp-1">
+      {store.name}
+    </h3>
+    <p className="mt-2 text-sm text-gray-500 line-clamp-2">
+      {store.description}
+    </p>
     <a
       href="#"
       className="mt-4 inline-block px-6 py-2 bg-indigo-600 text-white font-semibold rounded-full shadow-md hover:bg-indigo-700 transition-colors duration-200"
@@ -149,12 +162,30 @@ const StoreCard: React.FC<{ store: Store }> = ({ store }) => (
   </div>
 );
 
-
 // คอมโพเนนต์หน้าแรกหลัก
 const MarketplaceHomePage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [stores, setStores] = useState<Store[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const router = useRouter();
+
+  const goToDetail = (path: string) => {
+    router.push(path); // ไปหน้า /home/123
+  };
+
+  const handleLike = (id: number) => {
+    setProducts((prev) =>
+      prev.map((p) =>
+        p.id === id
+          ? {
+              ...p,
+              isLiked: !p.isLiked, // Toggle the liked state
+              likes: p.isLiked ? p.likes - 1 : p.likes + 1, // Increment/decrement likes
+            }
+          : p
+      )
+    );
+  };
 
   // ดึงข้อมูลสินค้าและร้านค้าเมื่อคอมโพเนนต์ถูกเมาท์
   useEffect(() => {
@@ -162,7 +193,7 @@ const MarketplaceHomePage: React.FC = () => {
       try {
         const [productData, storeData] = await Promise.all([
           fetchProducts(),
-          fetchStores()
+          fetchStores(),
         ]);
         setProducts(productData);
         setStores(storeData);
@@ -196,14 +227,20 @@ const MarketplaceHomePage: React.FC = () => {
         <section className="mb-12">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-3xl font-bold text-gray-800">สินค้าแนะนำ</h2>
-            <a href="#" className="flex items-center text-indigo-600 hover:text-indigo-800 font-semibold transition-colors duration-200">
+            <a
+              href="/product"
+              className="flex items-center text-indigo-600 hover:text-indigo-800 font-semibold transition-colors duration-200"
+            >
               ดูทั้งหมด <ChevronRight size={20} className="ml-1" />
             </a>
           </div>
           {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {Array.from({ length: 4 }).map((_, index) => (
-                <div key={index} className="bg-white rounded-xl shadow-lg p-4 animate-pulse">
+                <div
+                  key={index}
+                  className="bg-white rounded-xl shadow-lg p-4 animate-pulse"
+                >
                   <div className="w-full h-48 bg-gray-200 rounded-t-xl"></div>
                   <div className="mt-4 space-y-2">
                     <div className="h-4 bg-gray-200 rounded w-3/4"></div>
@@ -215,8 +252,13 @@ const MarketplaceHomePage: React.FC = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
+              {products.map((product, i) => (
+                <ProductCard
+                  key={i}
+                  product={product}
+                  onLike={handleLike}
+                  onClickPd={goToDetail}
+                />
               ))}
             </div>
           )}
@@ -226,14 +268,20 @@ const MarketplaceHomePage: React.FC = () => {
         <section className="mb-12">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-3xl font-bold text-gray-800">ร้านค้าแนะนำ</h2>
-            <a href="#" className="flex items-center text-indigo-600 hover:text-indigo-800 font-semibold transition-colors duration-200">
+            <a
+              href="#"
+              className="flex items-center text-indigo-600 hover:text-indigo-800 font-semibold transition-colors duration-200"
+            >
               ดูทั้งหมด <ChevronRight size={20} className="ml-1" />
             </a>
           </div>
           {isLoading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
               {Array.from({ length: 4 }).map((_, index) => (
-                <div key={index} className="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center animate-pulse">
+                <div
+                  key={index}
+                  className="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center animate-pulse"
+                >
                   <div className="w-20 h-20 rounded-full bg-gray-200 mb-4"></div>
                   <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
                   <div className="h-4 bg-gray-200 rounded w-full"></div>
@@ -251,15 +299,25 @@ const MarketplaceHomePage: React.FC = () => {
 
         {/* ส่วนหมวดหมู่สินค้า */}
         <section>
-          <h2 className="text-3xl font-bold text-gray-800 mb-6">หมวดหมู่สินค้า</h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-6">
+            หมวดหมู่สินค้า
+          </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            {['เครื่องสำอาง', 'แฟชั่น', 'ผลิตภัณฑ์ดูแลผิว', 'บ้านและสวน', 'กีฬา', 'หนังสือ'].map((category) => (
+            {[
+              "เครื่องสำอาง",
+              "แฟชั่น",
+              "ผลิตภัณฑ์ดูแลผิว",
+              "บ้านและสวน",
+              "กีฬา",
+              "หนังสือ",
+            ].map((category) => (
               <a
                 key={category}
                 href="#"
                 className="bg-white rounded-2xl shadow-lg p-6 text-center hover:bg-indigo-50 transition-colors duration-200 transform hover:scale-105"
               >
-                <div className="text-indigo-600 text-4xl mb-2">📦</div> {/* ไอคอน emoji แบบง่าย */}
+                <div className="text-indigo-600 text-4xl mb-2">📦</div>{" "}
+                {/* ไอคอน emoji แบบง่าย */}
                 <h3 className="font-semibold">{category}</h3>
               </a>
             ))}
@@ -270,11 +328,26 @@ const MarketplaceHomePage: React.FC = () => {
       {/* ส่วนท้ายของหน้าเว็บ */}
       <footer className="bg-gray-800 text-gray-300 py-8 mt-12">
         <div className="container mx-auto px-4 text-center">
-          <p>&copy; 2024 Marketplace. All rights reserved.</p>
+          <p>&copy; 2025 Shoperza. All rights reserved.</p>
           <div className="mt-4 flex justify-center space-x-4">
-            <a href="#" className="hover:text-white transition-colors duration-200">เกี่ยวกับเรา</a>
-            <a href="#" className="hover:text-white transition-colors duration-200">ติดต่อเรา</a>
-            <a href="#" className="hover:text-white transition-colors duration-200">นโยบายความเป็นส่วนตัว</a>
+            <a
+              href="/about"
+              className="hover:text-white transition-colors duration-200"
+            >
+              เกี่ยวกับเรา
+            </a>
+            <a
+              href="/contact-us"
+              className="hover:text-white transition-colors duration-200"
+            >
+              ติดต่อเรา
+            </a>
+            <a
+              href="/privacy-policy"
+              className="hover:text-white transition-colors duration-200"
+            >
+              นโยบายความเป็นส่วนตัว
+            </a>
           </div>
         </div>
       </footer>
